@@ -1,0 +1,24 @@
+{
+  "name": "daily-news",
+  "version": "0.0.1",
+  "main": "index.js",
+  "description": "매일 각종 분야의 뉴스를 가져올 수 있는 Node.js Module",
+  "types": "dist/Service/SportsHistory.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/korECM/SoccerHistory.git"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.18",
+    "@types/request": "^2.48.5",
+    "@types/request-promise": "^4.1.46",
+    "@types/xml2js": "^0.4.5"
+  }
+}
