@@ -10,33 +10,18 @@ interface NewsInterface {
   content: string;
 }
 
-const NewsCategory = {
-  all: "all",
-  entertain: "entertain",
-  sports: "sports",
-  society: "society",
-  politics: "politics",
-  economic: "economic",
-  foreign: "foreign",
-  culture: "culture",
-  digital: "digital",
-};
+type NewsCategory =
+  | "all"
+  | "entertain"
+  | "sports"
+  | "society"
+  | "politics"
+  | "economic"
+  | "foreign"
+  | "culture"
+  | "digital";
 
-type newsDataCategory = "title" | "image" | "description" | "content";
-
-interface NewsDataCategoryInterface {
-  title: newsDataCategory;
-  image: newsDataCategory;
-  description: newsDataCategory;
-  content: newsDataCategory;
-}
-
-const NewsDataCategory: NewsDataCategoryInterface = {
-  title: "title",
-  image: "image",
-  description: "description",
-  content: "content",
-};
+type NewsDataCategory = "title" | "image" | "description" | "content";
 
 interface NewsResultInterface {
   getData: () => NewsInterface[];
@@ -44,7 +29,7 @@ interface NewsResultInterface {
   getImageURLs: () => string[];
   getDesc: () => string[];
   getContent: () => string[];
-  gets: (category: newsDataCategory[]) => any;
+  gets: (category: NewsDataCategory[]) => any;
   getTime: () => string;
 }
 
@@ -100,6 +85,7 @@ const getRawData = async (
           .replace(/[a-zA-Z\d]*@[a-zA-Z]*.[a-zA-Z.]*/g, "")
           .replace(/.{2,4} 특파원 ?=? ?/g, "")
           .replace(/.{2,4} 기자 ?=? ?/g, "")
+          .replace(/.{2,4} 인턴기자 ?=? ?/g, "")
           .trim();
         resolve(data);
       }
@@ -110,7 +96,25 @@ const getRawData = async (
  * 뉴스를 받아오는 함수입니다.
  * category는 원하는 뉴스 분야를 의미합니다.
  *
- * @param {string} category News.Category에 담긴 분야를 전달합니다
+ * NewsCategory.all 종합
+ *
+ * NewsCategory.entertain 연예
+ *
+ * NewsCategory.sports 스포츠
+ *
+ * NewsCategory.society 사회
+ *
+ * NewsCategory.politics 정치
+ *
+ * NewsCategory.economic 경제
+ *
+ * NewsCategory.foreign 국제
+ *
+ * NewsCategory.culture 문화생활
+ *
+ * NewsCategory.digital IT과학
+ *
+ * @param {NewsCategory} category News.Category에 담긴 분야를 전달합니다
  * @returns {Promise<NewsResultInterface>} 뉴스 정보를 가져올 수 있는 함수들이 담긴 객체
  * @example
  * News(NewsCategory.all)
@@ -119,7 +123,7 @@ const getRawData = async (
  *    data.gets([newsDataCategory.imageURL, newsDataCategory.title]);
  * });
  */
-async function News(category: string): Promise<NewsResultInterface> {
+async function News(category: NewsCategory): Promise<NewsResultInterface> {
   let url = `http://media.daum.net/rss/today/primary/${category}/rss2.xml`;
   try {
     const data: string = await request(url);
@@ -140,10 +144,23 @@ async function News(category: string): Promise<NewsResultInterface> {
       getContent: () => {
         return result.map((data) => data.content);
       },
-      gets: (category: newsDataCategory[]) => {
+      /**
+       *
+       *
+       * @param {NewsDataCategory[]} 받아오고 싶은 정보들
+       * @returns {NewsInterface[]>}
+       * */
+      gets: (category: NewsDataCategory[]) => {
+        let sCategory: NewsDataCategory[] = category.reduce<NewsDataCategory[]>(
+          (a, b) => {
+            if (a.indexOf(b) < 0) a.push(b);
+            return a;
+          },
+          []
+        );
         let dataArray: any[] = result.map((data) => {
           let dataObject: any = {};
-          category.forEach((category) => {
+          sCategory.forEach((category) => {
             dataObject[`${category}`] = data[category];
           });
           return dataObject;
@@ -157,4 +174,4 @@ async function News(category: string): Promise<NewsResultInterface> {
   }
 }
 
-module.exports = { News, NewsCategory, NewsDataCategory };
+export { News, NewsCategory, NewsDataCategory };
