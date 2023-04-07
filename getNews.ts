@@ -170,7 +170,7 @@ async function News(category: NewsCategory): Promise<NewsResultInterface> {
       getTime: () => time,
     };
   } catch (error) {
-    throw new Error(error);
+    throw new Error(`${error}`);
   }
 }
 
